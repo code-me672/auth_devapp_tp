@@ -3,6 +3,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from slowapi.extension import _rate_limit_exceeded_handler
 
+
 from .database import Base, engine
 from .auth import router
 from .middleware import limiter
