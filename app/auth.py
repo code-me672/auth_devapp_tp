@@ -129,32 +129,38 @@ def connexion(
 
 # Route permettant de renouveler les tokens
 @router.post("/refresh")
-def refresh_token(
+def rafraichir_token(
     request: Request,
     response: Response
 ):
 
-    refresh_token = request.cookies.get(
+    # Récupération du refresh token dans les cookies
+    token_rafraichissement = request.cookies.get(
         "refresh_token"
     )
 
-    if not refresh_token:
+    # Vérifie si le token existe
+    if not token_rafraichissement :
         raise HTTPException(
             status_code=401,
             detail="Refresh token absent"
         )
 
     try:
-        payload = decode_token(refresh_token)
+         # Décodage du token
+        payload = decode_token( token_rafraichissement)
 
-        username = payload.get("sub")
+        # Récupération du nom utilisateur
+        nom_utilisateur = payload.get("sub")
 
-        new_access = create_access_token(
-            {"sub": username}
+         # Création d'un nouveau token d'accès
+         nouveau_token_acce = create_access_token(
+            {"sub": nom_utilisateur}
         )
-
-        new_refresh = create_refresh_token(
-            {"sub": username}
+        
+           # Création d'un nouveau refresh token
+         nouveau_token_rafraichissement = create_refresh_token(
+            {"sub": nom_utilisateur}
         )
 
         response.set_cookie(
