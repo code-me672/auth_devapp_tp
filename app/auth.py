@@ -13,37 +13,43 @@ from .security import (
     decode_token
 )
 
+# Création du routeur API
 router = APIRouter()
 
-MAX_FAILED_ATTEMPTS = 5
+MAX_TENTATIVES = 5
 
-
+# Route d'inscription
 @router.post("/register")
-def register(user: UserCreate, db: Session = Depends(get_db)):
+def inscription(utilisateur: UserCreate, db: Session = Depends(get_db)):
 
-    existing_user = db.query(User).filter(
-        User.username == user.username
+     # Recherche de l'utilisateur
+     utilisateur_existant = db.query(User).filter(
+        utilisateur.username == user.username
     ).first()
-
-    if existing_user:
+    
+# Vérifie si l'utilisateur existe déjà
+    if utilisateur_existant:
         raise HTTPException(
             status_code=400,
             detail="Utilisateur existe déjà"
         )
 
-    hashed = hash_password(user.password)
+ # Chiffrement du mot de passe
+    mot_de_passe_hache = hash_password(utilisateur.password)
 
-    new_user = User(
-        username=user.username,
-        password=hashed
+# Création du nouvel utilisateur
+    nouvel_utilisateur = User(
+        username=utilisateur.username,
+        password=mot_de_passe_hache
     )
 
-    db.add(new_user)
+ # Ajout dans la base
+    db.add(nouvel_utilisateur)
     db.commit()
 
     return {"message": "Utilisateur créé"}
 
-
+# Route de connexion utilisateur
 @router.post("/login")
 def login(
     user: UserLogin,
