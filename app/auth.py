@@ -51,34 +51,39 @@ def inscription(utilisateur: UserCreate, db: Session = Depends(get_db)):
 
 # Route de connexion utilisateur
 @router.post("/login")
-def login(
-    user: UserLogin,
+def connexion(
+    utilisateur: UserLogin,
     response: Response,
     db: Session = Depends(get_db)
 ):
-
-    db_user = db.query(User).filter(
-        User.username == user.username
+ # Recherche de l'utilisateur dans la base
+    utilisateur_db  = db.query(User).filter(
+        User.username == utilisateur.username
     ).first()
 
-    if not db_user:
+      # Vérifie si l'utilisateur existe
+    if not utilisateur_db :
         raise HTTPException(
             status_code=401,
             detail="Identifiants invalides"
         )
 
-    if db_user.locked:
+    # Vérifie si le compte est verrouillé
+    if utilisateur_db .locked:
         raise HTTPException(
             status_code=403,
             detail="Compte verrouillé"
         )
 
-    if not verify_password(user.password, db_user.password):
+     # Vérification du mot de passe
+    if not verify_password( utilisateur.password, utilisateur_db.password):
 
+          # Ajoute une tentative échouée
         db_user.failed_attempts += 1
 
-        if db_user.failed_attempts >= MAX_FAILED_ATTEMPTS:
-            db_user.locked = True
+         # Verrouille le compte après plusieurs échecs
+        if utilisateur_db.failed_attempts >= MAX_FAILED_ATTEMPTS:
+            utilisateur_db.locked = True
 
         db.commit()
 
@@ -86,18 +91,21 @@ def login(
             status_code=401,
             detail="Mot de passe incorrect"
         )
-
-    db_user.failed_attempts = 0
+         # Réinitialise les tentatives échouée
+    utilisateur_db.failed_attempts = 0
     db.commit()
 
+        # Création du token d'accès
     access_token = create_access_token(
-        {"sub": db_user.username}
+        {"sub": utilisateur_db.username}
     )
 
+    # Création du refresh token
     refresh_token = create_refresh_token(
         {"sub": db_user.username}
     )
 
+      # Enregistrement du token d'accès dans les cookies
     response.set_cookie(
         key="access_token",
         value=access_token,
@@ -106,6 +114,7 @@ def login(
         samesite="strict"
     )
 
+    # Enregistrement du refresh token dans les cookies
     response.set_cookie(
         key="refresh_token",
         value=refresh_token,
@@ -118,7 +127,7 @@ def login(
         "message": "Connexion réussie"
     }
 
-
+# Route permettant de renouveler les tokens
 @router.post("/refresh")
 def refresh_token(
     request: Request,
