@@ -185,6 +185,7 @@ def rafraichir_token(
             "message": "Tokens rafraîchis"
         }
 
+     # Gestion des erreurs
     except Exception:
         raise HTTPException(
             status_code=401,
