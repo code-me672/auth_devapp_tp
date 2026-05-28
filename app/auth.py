@@ -163,6 +163,7 @@ def rafraichir_token(
             {"sub": nom_utilisateur}
         )
 
+         # Mise à jour du cookie access token
         response.set_cookie(
             key="access_token",
             value=new_access,
@@ -171,6 +172,7 @@ def rafraichir_token(
             samesite="strict"
         )
 
+        # Mise à jour du cookie refresh token
         response.set_cookie(
             key="refresh_token",
             value=new_refresh,
