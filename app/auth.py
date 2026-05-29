@@ -19,7 +19,7 @@ router = APIRouter()
 MAX_TENTATIVES = 5
 
 # Route d'inscription
-@router.post("/register")
+@router.post("/inscription")
 def inscription(utilisateur: UserCreate, db: Session = Depends(get_db)):
 
      # Recherche de l'utilisateur
@@ -50,7 +50,7 @@ def inscription(utilisateur: UserCreate, db: Session = Depends(get_db)):
     return {"message": "Utilisateur créé"}
 
 # Route de connexion utilisateur
-@router.post("/login")
+@router.post("/connexion")
 def connexion(
     utilisateur: UserLogin,
     response: Response,
@@ -128,7 +128,7 @@ def connexion(
     }
 
 # Route permettant de renouveler les tokens
-@router.post("/refresh")
+@router.post("/rafraichir_token")
 def rafraichir_token(
     request: Request,
     response: Response
