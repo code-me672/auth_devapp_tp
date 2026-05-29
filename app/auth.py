@@ -100,7 +100,7 @@ def connexion(
 
     # Création du refresh token
     refresh_token = create_refresh_token(
-        {"sub": db_user.username}
+        {"sub": utilisateur_db.username}
     )
 
       # Enregistrement du token d'accès dans les cookies
