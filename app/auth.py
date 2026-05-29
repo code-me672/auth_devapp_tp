@@ -67,7 +67,7 @@ def connexion(
         )
 
     # Vérifie si le compte est verrouillé
-    if utilisateur_db .locked:
+    if utilisateur_db.locked:
         raise HTTPException(
             status_code=403,
             detail="Compte verrouillé"
@@ -77,7 +77,7 @@ def connexion(
     if not verify_password( utilisateur.password, utilisateur_db.password):
 
           # Ajoute une tentative échouée
-        db_user.failed_attempts += 1
+        utilisateur_db.failed_attempts += 1
 
          # Verrouille le compte après plusieurs échecs
         if utilisateur_db.failed_attempts >= MAX_FAILED_ATTEMPTS:
