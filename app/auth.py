@@ -16,7 +16,7 @@ router = APIRouter()
 
 MAX_TENTATIVES = 5
 
-# Route d'inscription
+# Route d'inscription dans le cas ou les utilisateurs sont unique
 @router.post("/inscription")
 def inscription(utilisateur: UserCreate, db: Session = Depends(get_db)):
 
@@ -59,7 +59,7 @@ def connexion(
         User.username == utilisateur.username
     ).first()
 
-      # Vérifie si l'utilisateur existe
+      # Vérifie si l'utilisateur n'existe pas
     if not utilisateur_db :
         raise HTTPException(
             status_code=401,
